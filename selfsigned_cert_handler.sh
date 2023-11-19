@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
 set -o errexit  # Exit uppon error. Can be circumvented through adding "|| :" at the end e.g.: false || :
