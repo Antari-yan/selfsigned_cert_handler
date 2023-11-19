@@ -38,17 +38,17 @@ Set the following variables to the desired value:
     * GEN_SSL_CERT_RENEWAL_DAY
     * GEN_SSL_CERT_HASH_ALGORITHM
 
-``` sh
+``` bash
 # After setting the variables run the script as is:
 bash selfsigned_cert_handler.sh
 ```
 
-``` sh
+``` bash
 # Show help:
 bash selfsigned_cert_handler.sh -h
 ```
 
-``` sh
+``` bash
 # Force renewal:
 bash selfsigned_cert_handler.sh --force
 ```
