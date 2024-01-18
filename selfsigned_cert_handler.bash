@@ -17,10 +17,6 @@ GEN_SSL_CERT_PRIVATE_KEY_PATH=.
 GEN_SSL_CERT_PUBLIC_KEY_NAME=public.pem
 GEN_SSL_CERT_PUBLIC_KEY_PATH=.
 
-# New certificate will be stored in a temporary directory,
-# to prevent overwriting current certificate and failing the renewal, leading to a broken certificate
-GEN_SSL_CERT_NEW_CERT_TMP_DIR=/tmp  
-
 # General certificate parameters
 GEN_SSL_CERT_COUNTRY_NAME=DE
 GEN_SSL_CERT_STATE_OR_PROVINCE_NAME=NRW
@@ -141,15 +137,15 @@ fi
 if [ "$GEN_SSL_CERT_GENERATE_NEW_CERT" = true ]; then
   echo -e "\x1b[32;20mGenerating new certificate\x1b[0m"
 
-  echo -e "\x1b[32;20mCreate Private Key in $GEN_SSL_CERT_NEW_CERT_TMP_DIR\x1b[0m"
-  openssl genrsa -out $GEN_SSL_CERT_NEW_CERT_TMP_DIR/$GEN_SSL_CERT_PRIVATE_KEY_NAME 4096
+  echo -e "\x1b[32;20mCreate Private Key\x1b[0m"
+  openssl genrsa -out $GEN_SSL_CERT_PRIVATE_KEY_PATH/$GEN_SSL_CERT_PRIVATE_KEY_NAME-tmp 4096
 
-  echo -e "\x1b[32;20mCreate Public Key in $GEN_SSL_CERT_NEW_CERT_TMP_DIR\x1b[0m"
-  openssl req -x509 -new -nodes -key $GEN_SSL_CERT_NEW_CERT_TMP_DIR/$GEN_SSL_CERT_PRIVATE_KEY_NAME -$GEN_SSL_CERT_HASH_ALGORITHM -days $GEN_SSL_CERT_VALID_DAYS -subj $DEFAULT_CERTIFICATE_SUBJECT -out $GEN_SSL_CERT_NEW_CERT_TMP_DIR/$GEN_SSL_CERT_PUBLIC_KEY_NAME -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName= DNS:$GEN_SSL_CERT_COMMON_NAME"))
+  echo -e "\x1b[32;20mCreate Public Key\x1b[0m"
+  openssl req -x509 -new -nodes -key $GEN_SSL_CERT_PRIVATE_KEY_PATH/$GEN_SSL_CERT_PRIVATE_KEY_NAME-tmp -$GEN_SSL_CERT_HASH_ALGORITHM -days $GEN_SSL_CERT_VALID_DAYS -subj $DEFAULT_CERTIFICATE_SUBJECT -out $GEN_SSL_CERT_PRIVATE_KEY_PATH/$GEN_SSL_CERT_PUBLIC_KEY_NAME-tmp -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName= DNS:$GEN_SSL_CERT_COMMON_NAME"))
 
-  echo -e "\x1b[32;20mMove new certificates from $GEN_SSL_CERT_NEW_CERT_TMP_DIR to $GEN_SSL_CERT_PUBLIC_KEY_PATH\x1b[0m"
-  mv $GEN_SSL_CERT_NEW_CERT_TMP_DIR/$GEN_SSL_CERT_PRIVATE_KEY_NAME $GEN_SSL_CERT_PRIVATE_KEY_PATH/$GEN_SSL_CERT_PRIVATE_KEY_NAME
-  mv $GEN_SSL_CERT_NEW_CERT_TMP_DIR/$GEN_SSL_CERT_PUBLIC_KEY_NAME $GEN_SSL_CERT_PUBLIC_KEY_PATH/$GEN_SSL_CERT_PUBLIC_KEY_NAME
+  echo -e "\x1b[32;20mOverwrite old certificate\x1b[0m"
+  mv $GEN_SSL_CERT_PRIVATE_KEY_PATH/$GEN_SSL_CERT_PRIVATE_KEY_NAME-tmp $GEN_SSL_CERT_PRIVATE_KEY_PATH/$GEN_SSL_CERT_PRIVATE_KEY_NAME
+  mv $GEN_SSL_CERT_PRIVATE_KEY_PATH/$GEN_SSL_CERT_PUBLIC_KEY_NAME-tmp $GEN_SSL_CERT_PUBLIC_KEY_PATH/$GEN_SSL_CERT_PUBLIC_KEY_NAME
 fi
 
 echo -e "\x1b[34;20mDone\x1b[0m"
